@@ -3,7 +3,7 @@ name: 릴리즈 브랜치 배포
 on:
   push:
     branches:
-      - "release/**"
+      - "releases/version-*"
 
 permissions:
   actions: write

@@ -33,12 +33,12 @@ jobs:
           NEXT_VERSION=$(date +'%Y.%m.%d-%H%M')
           echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_OUTPUT
 
-          # release 브랜치 생성
-          git checkout -b release/v${NEXT_VERSION}
+          # release 브랜치 생성 (형식 변경)
+          git checkout -b releases/version-${NEXT_VERSION}
 
           # 버전 태그 생성
           git tag v${NEXT_VERSION}
 
           # 변경사항 push
-          git push origin release/v${NEXT_VERSION}
+          git push origin releases/version-${NEXT_VERSION}
           git push origin v${NEXT_VERSION}
