@@ -28,6 +28,7 @@ jobs:
           echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_OUTPUT
 
       - name: 릴리즈 브랜치 및 태그 생성
+        id: version
         run: |
           # KST 시간으로 버전 생성
           NEXT_VERSION=$(TZ='Asia/Seoul' date +'%Y.%m.%d-%H%M')
@@ -44,20 +45,26 @@ jobs:
           git push origin v${NEXT_VERSION}
 
       # 체인지로그 생성 및 릴리즈 생성을 직접 실행
-      - name: 체인지 로그 생성
+      - name: Generate Changelog
         id: changelog
-        uses: conventional-changelog/conventional-changelog-action@v3
-        with:
-          config: "./changelog-config.js"
+        run: |
+          # conventional-changelog CLI 설치
+          npm install -g conventional-changelog-cli
+
+          # 체인지로그 생성
+          CHANGELOG=$(conventional-changelog -p angular -i CHANGELOG.md -s -r 0)
+          echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create Release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${NEXT_VERSION}
-          release_name: Release v${NEXT_VERSION}
-          body: ${{ steps.changelog.outputs.changelog }}
+          tag_name: v${{ steps.version.outputs.NEXT_VERSION }}
+          release_name: Release v${{ steps.version.outputs.NEXT_VERSION }}
+          body: ${{ steps.changelog.outputs.CHANGELOG }}
           draft: false
           prerelease: false
 
