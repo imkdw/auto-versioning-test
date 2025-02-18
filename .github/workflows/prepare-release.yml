@@ -1,10 +1,13 @@
 name: 릴리즈 준비
 
 on:
-  pull_request:
+  push:
     branches:
       - main
     types: [closed]
+
+permissions:
+  contents: write
 
 jobs:
   prepare-release:
@@ -14,6 +17,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Git 설정
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
       - name: 최신 버전 조회
         id: get_version
         run: |
@@ -22,16 +30,16 @@ jobs:
 
       - name: 릴리즈 브랜치 및 태그 생성
         run: |
-          # 다음 버전 확인, 이는 vYYYY.MM.DD-HHMM 형식으로 표시됨
-          NEXT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          # 현재 날짜와 시간으로 버전 생성
+          NEXT_VERSION=$(date +'%Y.%m.%d-%H%M')
           echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_OUTPUT
 
           # release 브랜치 생성
-          git checkout -b release/v$NEXT_VERSION
+          git checkout -b release/v${NEXT_VERSION}
 
           # 버전 태그 생성
-          git tag v$NEXT_VERSION
+          git tag v${NEXT_VERSION}
 
           # 변경사항 push
-          git push origin release/v$NEXT_VERSION
-          git push origin v$NEXT_VERSION
+          git push origin release/v${NEXT_VERSION}
+          git push origin v${NEXT_VERSION}
