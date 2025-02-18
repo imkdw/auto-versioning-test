@@ -5,8 +5,7 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
+permissions: write-all # 모든 권한 부여
 
 jobs:
   prepare-release:
