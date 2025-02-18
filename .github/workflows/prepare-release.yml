@@ -1,0 +1,37 @@
+name: 릴리즈 준비
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+
+jobs:
+  prepare-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 최신 버전 조회
+        id: get_version
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "LATEST_TAG=${LATEST_TAG}" >> $GITHUB_OUTPUT
+
+      - name: 릴리즈 브랜치 및 태그 생성
+        run: |
+          # 다음 버전 확인, 이는 vYYYY.MM.DD-HHMM 형식으로 표시됨
+          NEXT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_OUTPUT
+
+          # release 브랜치 생성
+          git checkout -b release/v$NEXT_VERSION
+
+          # 버전 태그 생성
+          git tag v$NEXT_VERSION
+
+          # 변경사항 push
+          git push origin release/v$NEXT_VERSION
+          git push origin v$NEXT_VERSION

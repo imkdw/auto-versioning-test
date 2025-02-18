@@ -1,0 +1,32 @@
+name: 릴리즈 브랜치 배포
+
+on:
+  push:
+    branches:
+      - "release/**"
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: API 배포 워크플로우 실행
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: API 배포
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 웹 배포 워크플로우 실행
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: 웹 배포
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 릴리즈 브랜치 배포 완료
+        run: |
+          echo "릴리즈 브랜치 배포 완료"

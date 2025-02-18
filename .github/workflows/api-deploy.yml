@@ -1,0 +1,14 @@
+name: API 배포
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: API 배포
+        run: |
+          echo "API 배포"

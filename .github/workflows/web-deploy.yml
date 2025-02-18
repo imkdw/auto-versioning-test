@@ -1,0 +1,14 @@
+name: 웹 배포
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 웹 배포
+        run: |
+          echo "웹 배포"
